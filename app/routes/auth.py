@@ -134,7 +134,7 @@ async def login(
             token=token, 
             refresh_token=refresh_token,
             status=TokenStatus.ACTIVE,
-            expires_at=func.now() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+            expires_at=func.now() + timedelta(days=30)
         )
         db.add(auth_token)
         await db.commit()

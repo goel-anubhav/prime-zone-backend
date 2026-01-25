@@ -77,3 +77,13 @@ class AgentRegistration(BaseModel):
     
     class Config:
         from_attributes = True
+
+# Request Schema for Refresh Token
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str
+
+# Response Schema for Refresh Token
+class RefreshTokenResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "Bearer"
