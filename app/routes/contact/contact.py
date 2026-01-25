@@ -7,6 +7,7 @@ from email.mime.multipart import MIMEMultipart
 
 from app.core.config import get_settings, get_logger
 from .template import contact_email_template
+from .response_mail import confirmation_email_template
 from app.db.schema import BaseOutput
 
 router = APIRouter()
@@ -57,6 +58,23 @@ def send_email_task(name: str, email: str, phone: str, message: str, subject: st
         
         logger.info(f"Contact email sent successfully to {recipients}")
 
+        # Send to User (Confirmation)
+        if email and email != "N/A":
+             msg_user = MIMEMultipart()
+             msg_user['From'] = sender_email
+             msg_user['To'] = email
+             msg_user['Subject'] = f"We Received Your Enquiry - Prime Zone Media"
+             
+             html_user = confirmation_email_template(name, message)
+             msg_user.attach(MIMEText(html_user, 'html'))
+             
+             server = smtplib.SMTP(smtp_server, smtp_port)
+             server.starttls()
+             server.login(sender_email, sender_password)
+             server.sendmail(sender_email, email, msg_user.as_string())
+             server.quit()
+             logger.info(f"Confirmation email sent to {email}")
+        
     except Exception as e:
         logger.error(f"Failed to send contact email: {str(e)}")
 
