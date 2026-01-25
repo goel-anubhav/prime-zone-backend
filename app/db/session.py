@@ -14,7 +14,7 @@ settings = get_settings()
 logger = get_logger()
 
 # Create Async Engine
-engine = create_async_engine(settings.DATABASE_URL, echo=True, future=True, 
+engine = create_async_engine(settings.DATABASE_URL, echo=False, future=True, 
                              pool_size=25, max_overflow=25, pool_pre_ping=True)
 
 
@@ -105,35 +105,35 @@ async def Add_Ibotix_Admin(db: AsyncSession = get_session()):
     async for session in db:
     
         # Checking if admin already exists
-        #existing_admin = await session.execute(
-        #    select(User).where(User.email == ADMIN_EMAIL),
-        #)
-        #existing_admin = existing_admin.scalars().first()
-        
-        #if not existing_admin:
-            
-        logger.info("Ibotix Admin Account does not exist..")
-        
-        # Create Admin User
-        admin_user = User(
-            user_type=UserType.ADMIN,
-            name="Ibotix",
-            email=ADMIN_EMAIL,
-            password=get_password_hash(ADMIN_PASS),  # Securely hash the password
-            user_status=UserStatus.ACTIVE,
+        existing_admin = await session.execute(
+            select(User).where(User.email == ADMIN_EMAIL),
         )
-            
-        session.add(admin_user)
-        await session.commit()
-        logger.info("Ibotix Admin Account added..")
+        existing_admin = existing_admin.scalars().first()
         
-        # Create admin profile
-        admin_profile = AdminProfile(user_id=admin_user.id)
-        session.add(admin_profile)
-        await session.commit()
+        if not existing_admin:
             
-    else:
-        logger.info("Ibotix Admin Account already exist..")
+            logger.info("Ibotix Admin Account does not exist..")
+            
+            # Create Admin User
+            admin_user = User(
+                user_type=UserType.ADMIN,
+                name="Ibotix",
+                email=ADMIN_EMAIL,
+                password=get_password_hash(ADMIN_PASS),  # Securely hash the password
+                user_status=UserStatus.ACTIVE,
+            )
+                
+            session.add(admin_user)
+            await session.commit()
+            logger.info("Ibotix Admin Account added..")
+            
+            # Create admin profile
+            admin_profile = AdminProfile(user_id=admin_user.id)
+            session.add(admin_profile)
+            await session.commit()
+            
+        else:
+            logger.info("Ibotix Admin Account already exist..")
     
     
     
