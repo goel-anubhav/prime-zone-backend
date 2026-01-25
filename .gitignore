@@ -11,3 +11,4 @@ env
 # Python Byte Code Cache
 /__pycache__
 *.pyc
+.env
