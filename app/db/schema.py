@@ -3,6 +3,7 @@ import datetime
 from typing import List, Optional
 from app.db.enum import UserStatus, UserType, AuthEvent
 from starlette.status import HTTP_200_OK, HTTP_401_UNAUTHORIZED
+import uuid
 
 
 # Base schema for Output
@@ -87,3 +88,22 @@ class RefreshTokenResponse(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str = "Bearer"
+
+# Service Schemas
+class ServiceBase(BaseModel):
+    title: str
+    image: Optional[str] = None
+    category: str
+    details: Optional[str] = None
+    
+    class Config:
+        from_attributes = True
+
+class ServiceCreate(ServiceBase):
+    pass
+
+class ServiceUpdate(ServiceBase):
+    pass
+
+class ServiceResponse(ServiceBase):
+    id: uuid.UUID

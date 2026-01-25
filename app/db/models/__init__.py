@@ -1,6 +1,7 @@
 from app.db.session import Base
 from .DataStorage import *
 from .UserBase import *
+from .Service import *
 
 # Automatically populate __all__ to include all classes inheriting from Base
 __all__ = [

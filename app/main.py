@@ -6,6 +6,7 @@ from app.db.session import init_db, drop_db, Add_Ibotix_Admin
 from app.db.models import *
 from app.routes.auth import router as auth_router
 from app.routes.refresh import router as refresh_router
+from app.routes.services import router as services_router
 from app.utility.CustomException import CustomHttpException
 from starlette.status import HTTP_301_MOVED_PERMANENTLY
 from fastapi.requests import Request
@@ -68,6 +69,7 @@ app.add_middleware(
 # Include auth routes
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(refresh_router, prefix="/auth", tags=["auth"])
+app.include_router(services_router, prefix="/api/services", tags=["Services"])
 
 # Custom Exception Handler
 @app.exception_handler(CustomHttpException)
