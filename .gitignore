@@ -1,0 +1,13 @@
+# Local Environment
+*.env
+env
+
+# Static Folder
+/static
+
+# Venv
+/.venv
+
+# Python Byte Code Cache
+/__pycache__
+*.pyc
