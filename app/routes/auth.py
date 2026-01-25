@@ -261,284 +261,284 @@ async def register_admin(
         raise CustomHttpException(status_code=500, detail="Internal Server Error", message="Error logging user")
 
 
-# Endpoint for Broker Registration
-@router.post("/register_broker", responses = {200: {"model": BaseOutput}})
-async def register_broker(
-    payload: BrokerRegistration,
-    request: Request,
-    user: User = Depends(get_active_user),
-    db: AsyncSession = Depends(get_session),
-):
+# # Endpoint for Broker Registration
+# @router.post("/register_broker", responses = {200: {"model": BaseOutput}})
+# async def register_broker(
+#     payload: BrokerRegistration,
+#     request: Request,
+#     user: User = Depends(get_active_user),
+#     db: AsyncSession = Depends(get_session),
+# ):
     
-    """
-    Handles the registration of a new Broker.
+#     """
+#     Handles the registration of a new Broker.
 
-    Args:
-        payload (UserCreate): Broker registration data.
-        request (Request): The incoming request.
-        user (User): The user object obtained from the token.
-        db (AsyncSession): The database session.
+#     Args:
+#         payload (UserCreate): Broker registration data.
+#         request (Request): The incoming request.
+#         user (User): The user object obtained from the token.
+#         db (AsyncSession): The database session.
 
-    Returns:
-        BaseOutput: A response message indicating the status of the registration.
+#     Returns:
+#         BaseOutput: A response message indicating the status of the registration.
 
-    Raises:
-        CustomHttpException: If the user already exists or if an internal server error occurs.
-    """
+#     Raises:
+#         CustomHttpException: If the user already exists or if an internal server error occurs.
+#     """
     
-    # Check User
-    if not user:
-        raise CustomHttpException(status_code=HTTP_404_NOT_FOUND,
-                                  message="User Not Found",
-                                  detail="Invalid Session Access Token"
-                                  )
+#     # Check User
+#     if not user:
+#         raise CustomHttpException(status_code=HTTP_404_NOT_FOUND,
+#                                   message="User Not Found",
+#                                   detail="Invalid Session Access Token"
+#                                   )
     
     
-    # Check for active user is Admin or not
-    if user.user_type != UserType.ADMIN:
-        raise CustomHttpException(status_code=HTTP_401_UNAUTHORIZED,
-                                  message="User Not Authorized",
-                                  detail="Only Admins can create Broker Accounts")
+#     # Check for active user is Admin or not
+#     if user.user_type != UserType.ADMIN:
+#         raise CustomHttpException(status_code=HTTP_401_UNAUTHORIZED,
+#                                   message="User Not Authorized",
+#                                   detail="Only Admins can create Broker Accounts")
     
-    try:
+#     try:
         
-        # Create Broker User
-        broker_user = User(
-            user_type=UserType.BROKER,
-            name=payload.name,
-            email=payload.email,
-            password=get_password_hash(payload.password),  # Securely hash the password
-            user_status=UserStatus.ACTIVE,
-        )
+#         # Create Broker User
+#         broker_user = User(
+#             user_type=UserType.BROKER,
+#             name=payload.name,
+#             email=payload.email,
+#             password=get_password_hash(payload.password),  # Securely hash the password
+#             user_status=UserStatus.ACTIVE,
+#         )
             
-        db.add(broker_user)
-        await db.commit()
+#         db.add(broker_user)
+#         await db.commit()
 
-        # Create admin profile
-        broker_profile = BrokerProfile(user_id=broker_user.id,
-                                       broker_key=str(broker_user.name[:3]).upper() + str(randint(420,999)),
-                        )
-        db.add(broker_profile)
-        await db.commit()
+#         # Create admin profile
+#         broker_profile = BrokerProfile(user_id=broker_user.id,
+#                                        broker_key=str(broker_user.name[:3]).upper() + str(randint(420,999)),
+#                         )
+#         db.add(broker_profile)
+#         await db.commit()
         
-        # Auth Log
-        if broker_user:
+#         # Auth Log
+#         if broker_user:
                 
-                auth_log = AuthLog(user_id=broker_user.id, 
-                                event=AuthEvent.REGISTER, 
-                                timestamp=func.now(),
-                                user_ip=request.client.host,
-                                user_device=request.headers.get('User-Agent')
-                                )
-                db.add(auth_log)
-                await db.commit()
+#                 auth_log = AuthLog(user_id=broker_user.id, 
+#                                 event=AuthEvent.REGISTER, 
+#                                 timestamp=func.now(),
+#                                 user_ip=request.client.host,
+#                                 user_device=request.headers.get('User-Agent')
+#                                 )
+#                 db.add(auth_log)
+#                 await db.commit()
         
-        response = JSONResponse(
-            content={
-                "message" : "New Broker Added",
-                "detail" :  f"New Broker {broker_user.name} Added Successfully"
-            },
-            status_code=HTTP_200_OK
-        )
+#         response = JSONResponse(
+#             content={
+#                 "message" : "New Broker Added",
+#                 "detail" :  f"New Broker {broker_user.name} Added Successfully"
+#             },
+#             status_code=HTTP_200_OK
+#         )
         
-        return response
+#         return response
         
-    except Exception as e:
-        logger.error(str(e))
-        raise CustomHttpException(status_code=500, detail="Internal Server Error", message="Error logging user")
+#     except Exception as e:
+#         logger.error(str(e))
+#         raise CustomHttpException(status_code=500, detail="Internal Server Error", message="Error logging user")
     
     
-# Endpoint for BrokerAlias Registration
-@router.post("/register_broker_alias", responses = {200: {"model": BaseOutput}})
-async def register_broker_alias(
-    payload: BrokerAliasRegistration,
-    request: Request,
-    user: User = Depends(get_active_user),
-    db: AsyncSession = Depends(get_session),
-):
+# # Endpoint for BrokerAlias Registration
+# @router.post("/register_broker_alias", responses = {200: {"model": BaseOutput}})
+# async def register_broker_alias(
+#     payload: BrokerAliasRegistration,
+#     request: Request,
+#     user: User = Depends(get_active_user),
+#     db: AsyncSession = Depends(get_session),
+# ):
     
-    """
-    Handles the registration of a new Broker Alias.
+#     """
+#     Handles the registration of a new Broker Alias.
 
-    Args:
-        payload (UserCreate): Broker registration data.
-        request (Request): The incoming request.
-        user (User): The user object obtained from the token.
-        db (AsyncSession): The database session.
+#     Args:
+#         payload (UserCreate): Broker registration data.
+#         request (Request): The incoming request.
+#         user (User): The user object obtained from the token.
+#         db (AsyncSession): The database session.
 
-    Returns:
-        BaseOutput: A response message indicating the status of the registration.
+#     Returns:
+#         BaseOutput: A response message indicating the status of the registration.
 
-    Raises:
-        CustomHttpException: If the user already exists or if an internal server error occurs.
-    """
+#     Raises:
+#         CustomHttpException: If the user already exists or if an internal server error occurs.
+#     """
     
-    # Check User
-    if not user:
-        raise CustomHttpException(status_code=HTTP_404_NOT_FOUND,
-                                  message="User Not Found",
-                                  detail="Invalid Session Access Token"
-                                  )
+#     # Check User
+#     if not user:
+#         raise CustomHttpException(status_code=HTTP_404_NOT_FOUND,
+#                                   message="User Not Found",
+#                                   detail="Invalid Session Access Token"
+#                                   )
     
     
-    # Check for active user is broker or not
-    if user.user_type != UserType.BROKER:
-        raise CustomHttpException(status_code=HTTP_401_UNAUTHORIZED,
-                                  message="User Not Authorized",
-                                  detail="Only Broker can create Broker Alias Accounts")
+#     # Check for active user is broker or not
+#     if user.user_type != UserType.BROKER:
+#         raise CustomHttpException(status_code=HTTP_401_UNAUTHORIZED,
+#                                   message="User Not Authorized",
+#                                   detail="Only Broker can create Broker Alias Accounts")
     
-    try:
+#     try:
         
-        # Create Broker Alias User
-        broker_alias_user = User(
-            user_type=UserType.BROKER_ALIAS,
-            name=payload.name,
-            email=payload.email,
-            password=get_password_hash(payload.password),  # Securely hash the password
-            user_status=UserStatus.ACTIVE,
-        )
+#         # Create Broker Alias User
+#         broker_alias_user = User(
+#             user_type=UserType.BROKER_ALIAS,
+#             name=payload.name,
+#             email=payload.email,
+#             password=get_password_hash(payload.password),  # Securely hash the password
+#             user_status=UserStatus.ACTIVE,
+#         )
             
-        db.add(broker_alias_user)
-        await db.commit()
+#         db.add(broker_alias_user)
+#         await db.commit()
 
-        # Create admin profile
-        broker_profile = BrokerAliasProfile(user_id=broker_alias_user.id,
-                                            broker_id=user.id)
-        db.add(broker_profile)
-        await db.commit()
+#         # Create admin profile
+#         broker_profile = BrokerAliasProfile(user_id=broker_alias_user.id,
+#                                             broker_id=user.id)
+#         db.add(broker_profile)
+#         await db.commit()
         
-        # Auth Log
-        if broker_alias_user:
+#         # Auth Log
+#         if broker_alias_user:
                 
-                auth_log = AuthLog(user_id=broker_alias_user.id, 
-                                event=AuthEvent.REGISTER, 
-                                timestamp=func.now(),
-                                user_ip=request.client.host,
-                                user_device=request.headers.get('User-Agent')
-                                )
-                db.add(auth_log)
-                await db.commit()
+#                 auth_log = AuthLog(user_id=broker_alias_user.id, 
+#                                 event=AuthEvent.REGISTER, 
+#                                 timestamp=func.now(),
+#                                 user_ip=request.client.host,
+#                                 user_device=request.headers.get('User-Agent')
+#                                 )
+#                 db.add(auth_log)
+#                 await db.commit()
         
-        response = JSONResponse(
-            content={
-                "message" : "New Broker Alias Added",
-                "detail" :  f"New Broker Alias {broker_alias_user.name} Added Successfully"
-            },
-            status_code=HTTP_200_OK
-        )
+#         response = JSONResponse(
+#             content={
+#                 "message" : "New Broker Alias Added",
+#                 "detail" :  f"New Broker Alias {broker_alias_user.name} Added Successfully"
+#             },
+#             status_code=HTTP_200_OK
+#         )
         
-        return response
+#         return response
         
-    except Exception as e:
-        logger.error(str(e))
-        raise CustomHttpException(status_code=500, detail="Internal Server Error", message="Error logging user")
+#     except Exception as e:
+#         logger.error(str(e))
+#         raise CustomHttpException(status_code=500, detail="Internal Server Error", message="Error logging user")
     
-# Endpoint for Agent Registration
-@router.post("/register_agent", responses = {200: {"model": BaseOutput}})
-async def register_agent(
-    payload: AgentRegistration,
-    request: Request,
-    user: User = Depends(get_active_user),
-    db: AsyncSession = Depends(get_session),
-):
+# # Endpoint for Agent Registration
+# @router.post("/register_agent", responses = {200: {"model": BaseOutput}})
+# async def register_agent(
+#     payload: AgentRegistration,
+#     request: Request,
+#     user: User = Depends(get_active_user),
+#     db: AsyncSession = Depends(get_session),
+# ):
     
-    """
-    Handles the registration of a new Agent.
+#     """
+#     Handles the registration of a new Agent.
 
-    Args:
-        payload (AgentRegistration): Agent registration data.
-        request (Request): The incoming request.
-        user (User): The user object obtained from the token.
-        db (AsyncSession): The database session.
+#     Args:
+#         payload (AgentRegistration): Agent registration data.
+#         request (Request): The incoming request.
+#         user (User): The user object obtained from the token.
+#         db (AsyncSession): The database session.
 
-    Returns:
-        BaseOutput: A response message indicating the status of the registration.
+#     Returns:
+#         BaseOutput: A response message indicating the status of the registration.
 
-    Raises:
-        CustomHttpException: If the user already exists or if an internal server error occurs.
-    """
+#     Raises:
+#         CustomHttpException: If the user already exists or if an internal server error occurs.
+#     """
     
-    # Check User
-    if not user:
-        raise CustomHttpException(status_code=HTTP_404_NOT_FOUND,
-                                  message="User Not Found",
-                                  detail="Invalid Session Access Token"
-                                  )
+#     # Check User
+#     if not user:
+#         raise CustomHttpException(status_code=HTTP_404_NOT_FOUND,
+#                                   message="User Not Found",
+#                                   detail="Invalid Session Access Token"
+#                                   )
     
     
-    # Check for active user is broker or broker alias
-    if user.user_type not in [UserType.BROKER, UserType.BROKER_ALIAS]:
-        raise CustomHttpException(status_code=HTTP_401_UNAUTHORIZED,
-                                  message="User Not Authorized",
-                                  detail="Only Broker/Alias can create Agent Accounts")
+#     # Check for active user is broker or broker alias
+#     if user.user_type not in [UserType.BROKER, UserType.BROKER_ALIAS]:
+#         raise CustomHttpException(status_code=HTTP_401_UNAUTHORIZED,
+#                                   message="User Not Authorized",
+#                                   detail="Only Broker/Alias can create Agent Accounts")
     
-    try:
+#     try:
         
-        # Create Broker Alias User
-        agent_user = User(
-            user_type=UserType.AGENT,
-            name=payload.name,
-            email=payload.email,
-            password=get_password_hash(payload.password),  # Securely hash the password
-            user_status=UserStatus.ACTIVE,
-        )
+#         # Create Broker Alias User
+#         agent_user = User(
+#             user_type=UserType.AGENT,
+#             name=payload.name,
+#             email=payload.email,
+#             password=get_password_hash(payload.password),  # Securely hash the password
+#             user_status=UserStatus.ACTIVE,
+#         )
             
-        db.add(agent_user)
-        await db.commit()
+#         db.add(agent_user)
+#         await db.commit()
 
-        # Create admin profile
-        if user.user_type == UserType.BROKER:
+#         # Create admin profile
+#         if user.user_type == UserType.BROKER:
             
-            agent_profile = AgentProfile(user_id=agent_user.id,
-                                                broker_id=user.id)
+#             agent_profile = AgentProfile(user_id=agent_user.id,
+#                                                 broker_id=user.id)
         
-        elif user.user_type == UserType.BROKER_ALIAS:
+#         elif user.user_type == UserType.BROKER_ALIAS:
             
-            # Extracted Alias Profile
-            broker_alias_profile = await db.execute(
-                select(BrokerAliasProfile).where(BrokerAliasProfile.user_id == user.id)
-            )
-            broker_alias_profile = broker_alias_profile.scalars().first()
+#             # Extracted Alias Profile
+#             broker_alias_profile = await db.execute(
+#                 select(BrokerAliasProfile).where(BrokerAliasProfile.user_id == user.id)
+#             )
+#             broker_alias_profile = broker_alias_profile.scalars().first()
             
-            if broker_alias_profile is None:
+#             if broker_alias_profile is None:
              
-                raise CustomHttpException(status_code=HTTP_404_NOT_FOUND,
-                                  message="No Broker Alias Found",
-                                  detail="Broker Alias Profile is not found associated witht the Broker Alias Account")
+#                 raise CustomHttpException(status_code=HTTP_404_NOT_FOUND,
+#                                   message="No Broker Alias Found",
+#                                   detail="Broker Alias Profile is not found associated witht the Broker Alias Account")
  
-            agent_profile = AgentProfile(user_id=agent_user.id,
-                                         broker_id=broker_alias_profile.broker_id)
+#             agent_profile = AgentProfile(user_id=agent_user.id,
+#                                          broker_id=broker_alias_profile.broker_id)
             
-        else:
+#         else:
 
-            raise CustomHttpException(status_code=HTTP_401_UNAUTHORIZED,
-                                  message="User Not Authorized",
-                                  detail="Only Broker/Alias can create Agent Accounts")
-        db.add(agent_profile)
-        await db.commit()
+#             raise CustomHttpException(status_code=HTTP_401_UNAUTHORIZED,
+#                                   message="User Not Authorized",
+#                                   detail="Only Broker/Alias can create Agent Accounts")
+#         db.add(agent_profile)
+#         await db.commit()
 
-        # Auth Log
-        if agent_user:
+#         # Auth Log
+#         if agent_user:
  
-            auth_log = AuthLog(user_id=agent_user.id, 
-                            event=AuthEvent.REGISTER, 
-                            timestamp=func.now(),
-                            user_ip=request.client.host,
-                            user_device=request.headers.get('User-Agent'))
+#             auth_log = AuthLog(user_id=agent_user.id, 
+#                             event=AuthEvent.REGISTER, 
+#                             timestamp=func.now(),
+#                             user_ip=request.client.host,
+#                             user_device=request.headers.get('User-Agent'))
             
-            db.add(auth_log)
-            await db.commit()
+#             db.add(auth_log)
+#             await db.commit()
 
-        response = JSONResponse(
-            content={
-                "message" : "New Agent Added",
-                "detail" :  f"New Agent {agent_user.name} Added Successfully"
-            },
-            status_code=HTTP_200_OK
-        )
+#         response = JSONResponse(
+#             content={
+#                 "message" : "New Agent Added",
+#                 "detail" :  f"New Agent {agent_user.name} Added Successfully"
+#             },
+#             status_code=HTTP_200_OK
+#         )
         
-        return response
+#         return response
         
-    except Exception as e:
-        logger.error(str(e))
-        raise CustomHttpException(status_code=500, detail="Internal Server Error", message="Error logging user")
+#     except Exception as e:
+#         logger.error(str(e))
+#         raise CustomHttpException(status_code=500, detail="Internal Server Error", message="Error logging user")
