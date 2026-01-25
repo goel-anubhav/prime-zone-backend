@@ -107,3 +107,40 @@ class ServiceUpdate(ServiceBase):
 
 class ServiceResponse(ServiceBase):
     id: uuid.UUID
+
+# Portfolio Schemas
+class PortfolioBase(BaseModel):
+    title: str
+    category: str
+    description: Optional[str] = None
+    image: Optional[str] = None
+    
+    class Config:
+        from_attributes = True
+
+class PortfolioCreate(PortfolioBase):
+    pass
+
+class PortfolioUpdate(PortfolioBase):
+    pass
+
+class PortfolioResponse(PortfolioBase):
+    id: uuid.UUID
+
+# Hero Section Schemas
+class HeroBase(BaseModel):
+    title: Optional[str] = None
+    subtitle: Optional[str] = None
+    image: str
+    
+    class Config:
+        from_attributes = True
+
+class HeroCreate(HeroBase):
+    pass
+
+class HeroUpdate(HeroBase):
+    pass
+
+class HeroResponse(HeroBase):
+    id: uuid.UUID

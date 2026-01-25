@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse, JSONResponse
 from app.core.config import get_settings, get_logger
@@ -7,6 +8,8 @@ from app.db.models import *
 from app.routes.auth import router as auth_router
 from app.routes.refresh import router as refresh_router
 from app.routes.services import router as services_router
+from app.routes.portfolio import router as portfolio_router
+from app.routes.hero_section import router as hero_router
 from app.utility.CustomException import CustomHttpException
 from starlette.status import HTTP_301_MOVED_PERMANENTLY
 from fastapi.requests import Request
@@ -65,11 +68,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Mount Static Files
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 # Include auth routes
 # Include auth routes
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(refresh_router, prefix="/auth", tags=["auth"])
 app.include_router(services_router, prefix="/api/services", tags=["Services"])
+app.include_router(portfolio_router, prefix="/api/portfolio", tags=["Portfolio"])
+app.include_router(hero_router, prefix="/api/hero", tags=["Hero Section"])
+
 
 # Custom Exception Handler
 @app.exception_handler(CustomHttpException)
