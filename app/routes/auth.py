@@ -52,7 +52,7 @@ async def get_active_user(token:str = Depends(oauth2_scheme),db: AsyncSession = 
         
         username: str = payload.get("sub")
         if not username:
-            print("Username null")
+            logger.error("Error in get_active_user: Username null in token payload")
             raise credentials_exception
             
         else:
@@ -63,12 +63,12 @@ async def get_active_user(token:str = Depends(oauth2_scheme),db: AsyncSession = 
             auth_token = auth_token.scalars().first()
             
             if not auth_token:
-                print("Token not found")
+                logger.error("Error in get_active_user: Token record not found or inactive/expired in DB")
                 raise credentials_exception
             
 
             if user is None:
-                print("User not found")
+                logger.error(f"Error in get_active_user: User not found for email {username}")
                 raise credentials_exception
             return user
         
@@ -77,7 +77,7 @@ async def get_active_user(token:str = Depends(oauth2_scheme),db: AsyncSession = 
             raise e
         
         else:
-            print(str(e))
+            logger.error(f"Error in get_active_user: {str(e)}")
             raise credentials_exception
 
 # Endpoint for Login

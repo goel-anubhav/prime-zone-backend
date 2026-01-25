@@ -9,10 +9,11 @@ from sqlalchemy import select, func
 from datetime import datetime
 from starlette.status import HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN
 from app.utility.CustomException import CustomHttpException
-from app.core.config import get_settings
+from app.core.config import get_settings, get_logger
 from datetime import timedelta
 
 settings = get_settings()
+logger = get_logger()
 router = APIRouter()
 
 @router.post("/refresh", response_model=RefreshTokenResponse)
@@ -86,5 +87,5 @@ async def refresh_token(
     except Exception as e:
         if isinstance(e, CustomHttpException):
             raise e
-        print(f"Refresh token error: {e}")
+        logger.error(f"Refresh token error: {e}")
         raise credentials_exception

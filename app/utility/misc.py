@@ -108,7 +108,8 @@ def decode_token(token: str, token_type="access"):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
-    except JWTError:
+    except JWTError as e:
+        logger.error(f"JWT Error: {e}")
         raise ValueError("Invalid token")
     
 
