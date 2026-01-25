@@ -10,6 +10,7 @@ from app.routes.refresh import router as refresh_router
 from app.routes.services import router as services_router
 from app.routes.portfolio import router as portfolio_router
 from app.routes.hero_section import router as hero_router
+from app.routes.contact import router as contact_router
 from app.utility.CustomException import CustomHttpException
 from starlette.status import HTTP_301_MOVED_PERMANENTLY
 from fastapi.requests import Request
@@ -78,6 +79,7 @@ app.include_router(refresh_router, prefix="/auth", tags=["auth"])
 app.include_router(services_router, prefix="/api/services", tags=["Services"])
 app.include_router(portfolio_router, prefix="/api/portfolio", tags=["Portfolio"])
 app.include_router(hero_router, prefix="/api/hero", tags=["Hero Section"])
+app.include_router(contact_router, prefix="/api/contact", tags=["Contact Us"])
 
 
 # Custom Exception Handler

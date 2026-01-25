@@ -57,6 +57,12 @@ class Settings(BaseSettings):
     ADMIN_EMAIL: str = os.getenv("ADMIN_EMAIL")
     ADMIN_PASS: str = os.getenv("ADMIN_PASS")
     
+    # SMTP Details
+    SMTP_URL: str = os.getenv("SMTP_URL")
+    SMTP_PORT: int = os.getenv("SMTP_PORT")
+    EMAIL: str = os.getenv("SMTP_EMAIL")
+    PASSWORD: str = os.getenv("SMTP_PASSWORD")
+    
     class Config:
         env_file = ".env"
         extra = "ignore"
