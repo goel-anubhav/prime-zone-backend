@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+import os
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse, JSONResponse
@@ -49,6 +50,10 @@ async def lifespan(app: FastAPI):
     logger.info("Starting up: Initializing the database")
     await init_db()
     await Add_Ibotix_Admin()
+
+    # Create static folder if not exists
+    if not os.path.exists("static"):
+        os.makedirs("static")
 
     # Yield to let the application run
     yield

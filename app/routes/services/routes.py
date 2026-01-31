@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile, Form
+import shutil
+import os
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from typing import List
@@ -11,6 +13,8 @@ from app.routes.auth import get_active_user
 from app.db.enum import UserType
 
 router = APIRouter()
+
+STATIC_DIR = "static"
 
 async def check_admin(user: User = Depends(get_active_user)):
     if user.user_type != UserType.ADMIN:
@@ -41,11 +45,34 @@ async def get_service(
 
 @router.post("/", response_model=ServiceResponse)
 async def create_service(
-    service: ServiceCreate,
+    title: str = Form(...),
+    category: str = Form(...),
+    details: str = Form(None),
+    image: UploadFile = File(None),
     db: AsyncSession = Depends(get_session),
     user: User = Depends(check_admin)
-):
-    new_service = Service(**service.model_dump())
+):  
+    image_url = None
+    if image:
+        try:
+            file_extension = image.filename.split(".")[-1]
+            file_name = f"{uuid.uuid4()}.{file_extension}"
+            file_path = os.path.join(STATIC_DIR, file_name)
+
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(image.file, buffer)
+            
+            image_url = f"/static/{file_name}"
+        
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Image upload failed: {str(e)}")
+
+    new_service = Service(
+        title=title,
+        category=category,
+        details=details,
+        image=image_url
+    )
     db.add(new_service)
     await db.commit()
     await db.refresh(new_service)
@@ -54,7 +81,10 @@ async def create_service(
 @router.put("/{id}", response_model=ServiceResponse)
 async def update_service(
     id: uuid.UUID,
-    service_update: ServiceUpdate,
+    title: Optional[str] = Form(None),
+    category: Optional[str] = Form(None),
+    details: Optional[str] = Form(None),
+    image: Optional[UploadFile] = File(None),
     db: AsyncSession = Depends(get_session),
     user: User = Depends(check_admin)
 ):
@@ -63,8 +93,33 @@ async def update_service(
     if not service:
         raise HTTPException(status_code=404, detail="Service not found")
     
-    for key, value in service_update.model_dump(exclude_unset=True).items():
-        setattr(service, key, value)
+    if title is not None:
+        service.title = title
+    if category is not None:
+        service.category = category
+    if details is not None:
+        service.details = details
+
+    if image:
+        try:
+            # Delete old image if exists
+            if service.image:
+                relative_path = service.image.lstrip("/")
+                old_file_path = relative_path
+                if os.path.exists(old_file_path):
+                    os.remove(old_file_path)
+
+            file_extension = image.filename.split(".")[-1]
+            file_name = f"{uuid.uuid4()}.{file_extension}"
+            file_path = os.path.join(STATIC_DIR, file_name)
+
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(image.file, buffer)
+            
+            service.image = f"/static/{file_name}"
+        
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Image upload failed: {str(e)}")
     
     await db.commit()
     await db.refresh(service)
@@ -81,6 +136,13 @@ async def delete_service(
     if not service:
         raise HTTPException(status_code=404, detail="Service not found")
     
+    # Delete Image from Static Folder
+    if service.image:
+        relative_path = service.image.lstrip("/")
+        file_path = relative_path
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
     await db.delete(service)
     await db.commit()
     return BaseOutput(message="Service deleted successfully", detail=f"Service with id {id} has been deleted")

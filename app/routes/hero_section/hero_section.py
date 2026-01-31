@@ -103,3 +103,32 @@ async def update_hero_section(
     await db.commit()
     await db.refresh(hero)
     return hero
+
+@router.delete("/{id}", response_model=BaseOutput)
+async def delete_hero_section(
+    id: uuid.UUID,
+    db: AsyncSession = Depends(get_session),
+    user: User = Depends(check_admin)
+):
+    result = await db.execute(select(HeroSection).where(HeroSection.id == id))
+    hero = result.scalars().first()
+    if not hero:
+        raise HTTPException(status_code=404, detail="Hero Section not found")
+    
+    # Delete Image from Static Folder
+    if hero.image:
+        # Assuming hero.image is stored as relative path e.g., /static/filename.ext
+        # We need to construct the full local path
+        # Remove leading slash if present
+        relative_path = hero.image.lstrip("/")
+        file_path = relative_path  # Since STATIC_DIR is "static" and relative_path starts with "static/"
+        
+        # If the structure is different, we might need adjustments. 
+        # Based on creation: image_url = f"/static/{file_name}" -> "static/filename.ext" matches default current dir structure if running from root.
+        
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+    await db.delete(hero)
+    await db.commit()
+    return BaseOutput(message="Hero Section deleted successfully", detail=f"Hero Section with id {id} has been deleted")
