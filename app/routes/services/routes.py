@@ -3,8 +3,9 @@ import shutil
 import os
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from typing import List
+from typing import List, Optional
 import uuid
+
 
 from app.db.session import get_session
 from app.db.models import Service, User
