@@ -92,9 +92,16 @@ class RefreshTokenResponse(BaseModel):
 # Service Schemas
 class ServiceBase(BaseModel):
     title: str
-    image: Optional[str] = None
     category: str
-    details: Optional[str] = None
+    
+    heading1: Optional[str] = None
+    heading2: Optional[str] = None
+    
+    detail1: Optional[str] = None
+    detail2: Optional[str] = None
+    
+    image1: Optional[str] = None
+    image2: Optional[str] = None
     
     class Config:
         from_attributes = True
