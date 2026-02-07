@@ -28,7 +28,7 @@ async def check_admin(user: User = Depends(get_active_user)):
 @router.get("/", response_model=List[ServiceResponse])
 async def get_all_services(
     db: AsyncSession = Depends(get_session),
-    user: User = Depends(check_admin)
+    # user: User = Depends(check_admin)
 ):
     result = await db.execute(select(Service))
     services = result.scalars().all()
