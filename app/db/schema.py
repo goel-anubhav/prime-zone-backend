@@ -92,7 +92,7 @@ class RefreshTokenResponse(BaseModel):
 # Service Schemas
 class ServiceBase(BaseModel):
     title: str
-    category: str
+    category:  Optional[str]= None
     
     heading1: Optional[str] = None
     heading2: Optional[str] = None
@@ -118,7 +118,7 @@ class ServiceResponse(ServiceBase):
 # Portfolio Schemas
 class PortfolioBase(BaseModel):
     title: str
-    category: str
+    category:  Optional[str]= None
     description: Optional[str] = None
     image: Optional[str] = None
     

@@ -47,7 +47,7 @@ async def get_portfolio(
 @router.post("/", response_model=PortfolioResponse)
 async def create_portfolio(
     title: str = Form(...),
-    category: str = Form(...),
+    category: Optional[str] = Form(None),
     description: Optional[str] = Form(None),
     image: UploadFile = File(...),
     db: AsyncSession = Depends(get_session),

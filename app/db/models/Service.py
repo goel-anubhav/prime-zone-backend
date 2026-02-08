@@ -13,7 +13,7 @@ class Service(Base):
     
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
     title: Mapped[str] = mapped_column(String, nullable=False)
-    category: Mapped[str] = mapped_column(String, nullable=False)
+    category: Mapped[str] = mapped_column(String, nullable=True)
     
     heading1: Mapped[str] = mapped_column(String, nullable=True)
     heading2: Mapped[str] = mapped_column(String, nullable=True)

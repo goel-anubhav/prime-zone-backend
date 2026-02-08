@@ -49,7 +49,7 @@ async def get_service(
 @router.post("/", response_model=ServiceResponse)
 async def create_service(
     title: str = Form(...),
-    category: str = Form(...),
+    category: Optional[str] = Form(None),
     heading1: Optional[str] = Form(None),
     heading2: Optional[str] = Form(None),
     detail1: Optional[str] = Form(None),
