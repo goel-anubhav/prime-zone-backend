@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./static:/app/static
+    networks:
+      - app-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@primezonemedia.com
+      PGADMIN_DEFAULT_PASSWORD: admin.password
+      PGADMIN_CONFIG_ENHANCED_SECURITY: "False"
+    ports:
+      - "5050:80"
+    volumes:
+      - ./servers.json:/pgadmin4/servers.json
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - app-network
+
+networks:
+  app-network:
+
+volumes:
+  pgdata:
+  pgadmin_data:

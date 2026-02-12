@@ -28,7 +28,13 @@ origins = [
     'http://localhost:3000',
     'http://localhost:8080',
     'http://localhost:5173',
-    'http://localhost:5174'
+    'http://localhost:5174',
+    "http://72.62.229.113:3000",
+    "http://72.62.229.113:3001",
+    "https://primezonemedia.com",
+    "https://www.primezonemedia.com",
+    "https://admin.primezonemedia.com",
+    "https://www.admin.primezonemedia.com"
 ]
 
 # Lifespan manager to handle startup and shutdown events
