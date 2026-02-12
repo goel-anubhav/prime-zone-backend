@@ -30,7 +30,7 @@ def send_email_task(name: str, email: str, phone: str, message: str, subject: st
         
         # Determine recipients
         # Splitting ADMIN_EMAIL by comma if multiple admins are provided
-        recipients = ["testanubhav80@gmail.com"]
+        recipients = []
         if settings.ADMIN_EMAIL:
             recipients.extend([e.strip() for e in settings.ADMIN_EMAIL.split(',')])
         
@@ -78,7 +78,7 @@ def send_email_task(name: str, email: str, phone: str, message: str, subject: st
     except Exception as e:
         logger.error(f"Failed to send contact email: {str(e)}")
 
-@router.post("/", response_model=BaseOutput)
+@router.post("", response_model=BaseOutput)
 async def contact_us(
     contact_data: ContactRequest,
     background_tasks: BackgroundTasks

@@ -25,7 +25,7 @@ async def check_admin(user: User = Depends(get_active_user)):
         )
     return user
 
-@router.get("/", response_model=List[ServiceResponse])
+@router.get("", response_model=List[ServiceResponse])
 async def get_all_services(
     db: AsyncSession = Depends(get_session),
     # user: User = Depends(check_admin)
@@ -46,7 +46,7 @@ async def get_service(
         raise HTTPException(status_code=404, detail="Service not found")
     return service
 
-@router.post("/", response_model=ServiceResponse)
+@router.post("", response_model=ServiceResponse)
 async def create_service(
     title: str = Form(...),
     category: Optional[str] = Form(None),

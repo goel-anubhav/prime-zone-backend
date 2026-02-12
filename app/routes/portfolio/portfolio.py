@@ -24,7 +24,7 @@ async def check_admin(user: User = Depends(get_active_user)):
         )
     return user
 
-@router.get("/", response_model=List[PortfolioResponse])
+@router.get("", response_model=List[PortfolioResponse])
 async def get_all_portfolios(
     db: AsyncSession = Depends(get_session)
 ):
@@ -44,7 +44,7 @@ async def get_portfolio(
         raise HTTPException(status_code=404, detail="Portfolio Item not found")
     return portfolio
 
-@router.post("/", response_model=PortfolioResponse)
+@router.post("", response_model=PortfolioResponse)
 async def create_portfolio(
     title: str = Form(...),
     category: Optional[str] = Form(None),

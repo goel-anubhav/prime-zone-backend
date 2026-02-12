@@ -24,7 +24,7 @@ async def check_admin(user: User = Depends(get_active_user)):
         )
     return user
 
-@router.get("/", response_model=List[HeroResponse])
+@router.get("", response_model=List[HeroResponse])
 async def get_hero_sections(
     db: AsyncSession = Depends(get_session)
 ):
@@ -32,7 +32,7 @@ async def get_hero_sections(
     hero_sections = result.scalars().all()
     return hero_sections
 
-@router.post("/", response_model=HeroResponse)
+@router.post("", response_model=HeroResponse)
 async def create_hero_section(
     image: UploadFile = File(...),
     title: Optional[str] = Form(None),
